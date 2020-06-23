@@ -1,0 +1,64 @@
+{
+	"id": "e6625800-eaa4-42b5-a3c2-01de90d38a6e",
+	"name": "Power Automate Connector",
+	"description": "",
+	"auth": null,
+	"events": null,
+	"variables": [],
+	"order": [
+		"f9cb0748-f101-4969-ab75-6d8c04214d1f"
+	],
+	"folders_order": [],
+	"protocolProfileBehavior": {},
+	"folders": [],
+	"requests": [
+		{
+			"id": "f9cb0748-f101-4969-ab75-6d8c04214d1f",
+			"name": "OSDU R2 Custom Connector",
+			"url": "https://ado-prod-jnw-jnwijvfg-au-search.azurewebsites.net/api/search/v2/query",
+			"description": null,
+			"data": [],
+			"dataOptions": {
+				"raw": {
+					"language": "json"
+				}
+			},
+			"dataMode": "raw",
+			"headerData": [
+				{
+					"key": "Authorization",
+					"type": "text",
+					"value": "Bearer {{bearerToken}}"
+				},
+				{
+					"key": "data-partition-id",
+					"type": "text",
+					"value": "opendes"
+				},
+				{
+					"key": "Content-Type",
+					"name": "Content-Type",
+					"type": "text",
+					"value": "application/json"
+				},
+				{
+					"enabled": false,
+					"key": "",
+					"type": "text",
+					"value": ""
+				}
+			],
+			"method": "POST",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": {
+				"type": "noauth"
+			},
+			"events": null,
+			"folder": null,
+			"rawModeData": "{\r\n   \"kind\": \"opendes:osdu:well-master:0.2.1\",\r\n   \"query\": \"BIR*\"\r\n}",
+			"headers": "Authorization: Bearer {{bearerToken}}\ndata-partition-id: opendes\nContent-Type: application/json\n",
+			"pathVariables": {}
+		}
+	]
+}
