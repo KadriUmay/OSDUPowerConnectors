@@ -77,7 +77,7 @@ Extensions and install Power Query SDK as shown below.
 
 ![](media/10465c4cc2c5291d391f20f7c2dfcc6f.png)
 
-Once installed open the M Language Project here.
+Once installed open the M Language Project under Power BI Connector.
 
 Solution has 3 main files and set of resources. Config.json stores the
 connection parameters, it has been pre-populated with the demo environment
@@ -172,7 +172,7 @@ in your own tenant if you’re using a custom deployment. Hit Sign, fill in
 account details and hit connect.
 
 You will get a query results window where the data from OSDU R2 is pulled as a
-hierarchical json file. For a sample file see the PBIX file here.
+hierarchical json file. For a sample file see the PBIX file under Power BI Sample Dashboard.
 
 ![](media/a1f98588255d99df3982e1768a64396b.png)
 
@@ -202,7 +202,7 @@ simple Postman Collection with a single query to search for wells in OSDU R2.
 
 ![](media/f844c77bc02830464f6e52020c74c4ab.png)
 
-The Power Automate Connector Postman collection could be downloaded from here.
+The Power Automate Connector Postman collection could be downloaded from Power Automate Connector Postman Collection.
 Note that the query doesn’t run as you need to provide a bearer token.
 
 ![](media/6c4acf1043e880dafcb19b083959a83e.png)
@@ -269,7 +269,7 @@ You will see the successful response on the bottom of the page
 
 Now that you have created a custom connector, you can create a Power Automate
 flow using the designer. Navigate to <https://make.preview.powerapps.com/> ,
-select Apps -\> Import Canvas App, it upload and select zip file located here.
+select Apps -\> Import Canvas App, it upload and select zip file located at Power Automate Package.
 
 ![](media/9023e3f8cf3a480254ef3ee695202b4a.png)
 
