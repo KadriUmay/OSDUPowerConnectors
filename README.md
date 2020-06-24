@@ -4,7 +4,7 @@ Demo environment parameters will be provided by Microsoft. Current parameters as
 of 6/22/2020 for R2 QA environment is provided below. For customer tenant custom
 deployments the location to get the parameter is also provided.
 
-**client_id %lt;Your Client ID Here&gt;**
+**client_id &lt;Your Client ID Here&gt;**
 
 ![](media/a326745be1ced2e16f0191ff077197c2.png)
 
