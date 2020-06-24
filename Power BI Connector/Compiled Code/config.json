@@ -1,10 +1,10 @@
 {
-  "client_id": "7001057b-61d7-49fd-97da-eaf2af820228",
-  "client_secret": "4H6R/Z?0pBxnw:QWwAO5NqhYyZe@jpkO",
-  "osduindexsearchendpoint": "https://ado-prod-jnw-jnwijvfg-au-search.azurewebsites.net/api/search/v2/query",
+  "client_id": "Your Client ID",
+  "client_secret": "Your Client Secret",
+  "osduindexsearchendpoint": "https://YourOSDUHost/api/search/v2/query",
   "auth_callback_url": "http://localhost:8080/auth/callback",
-  "auth_token_url": "https://login.microsoftonline.com/58975fd3-4977-44d0-bea8-37af0baac100/oauth2/v2.0/token",
-  "auth_authorize_url": "https://login.microsoftonline.com/58975fd3-4977-44d0-bea8-37af0baac100/oauth2/v2.0/authorize",
-  "scopes": "openid profile offline_access 7001057b-61d7-49fd-97da-eaf2af820228/.default",
+  "auth_token_url": "https://login.microsoftonline.com/Your Tenant ID/oauth2/v2.0/token",
+  "auth_authorize_url": "https://login.microsoftonline.com/Your Tenant ID/oauth2/v2.0/authorize",
+  "scopes": "openid profile offline_access YourClientID/.default",
   "data_partition_id": "opendes"
 }
