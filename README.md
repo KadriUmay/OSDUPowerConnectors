@@ -38,10 +38,10 @@ ID for custom deployments.
 **tenant_id &lt;Your Tenant ID Here&gt;**
 
 **auth_authorize_url**
-https://login.microsoftonline.com/&lt;Your Tenant ID Here&gt;/oauth2/v2.0/authorize
+https://login.microsoftonline.com/ &lt;Your Tenant ID Here&gt; /oauth2/v2.0/authorize
 
 **auth_token_url**
-https://login.microsoftonline.com/&lt;Your Tenant ID Here&gt;/oauth2/v2.0/token
+https://login.microsoftonline.com/ &lt;Your Tenant ID Here&gt; /oauth2/v2.0/token
 
 ![](media/692a2774bd05414a9cf518ec408f3bd4.png)
 
