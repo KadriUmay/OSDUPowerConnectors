@@ -52,7 +52,7 @@ Callback URL needs to be added to the Authentication tab as a Web Redirect URI
 ![](media/443d34af68fbefb99fe4cd332ed9b3e4.png)
 
 **search_api_url
-https://Your OSDU Host/api/search/v2/query**
+https://YourOSDUHost/api/search/v2/query**
 
 **data-partition-id opendes**
 
