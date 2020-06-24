@@ -18,7 +18,7 @@ value. Copy this for Client_Id parameter.
 
 ![](media/692a2774bd05414a9cf518ec408f3bd4.png)
 
-**client_secret Your client secret here**
+**client_secret &lt;Your client secret here&gt;**
 
 Select Certificates and secrets tab, hit New client secret and copy the Value
 for client_secret. Note that once you create and save the client secret, you
@@ -27,7 +27,7 @@ create before navigating to a new tab.
 
 ![](media/08bb4a32da19c52014e592a314591c12.png)
 
-**scopes openid profile offline_access Your Client ID Here/.default**
+**scopes openid profile offline_access &lt;Your Client ID Here&gt;/.default**
 
 The last parameter of the scopes parameter contains a GUID, replace it with the
 client_id parameter above if you’re accessing a custom application
@@ -35,13 +35,13 @@ client_id parameter above if you’re accessing a custom application
 In the following parameters, you will need the replace the GUID with the tenant
 ID for custom deployments.
 
-**tenant_id Your Tenant ID Here**
+**tenant_id &lt;Your Tenant ID Here&gt;**
 
 **auth_authorize_url**
-<https://login.microsoftonline.com/Your Tenant ID Here/oauth2/v2.0/authorize>
+<https://login.microsoftonline.com/&lt;Your Tenant ID Here&gt;/oauth2/v2.0/authorize>
 
 **auth_token_url**
-<https://login.microsoftonline.com/Your Tenant ID Here/oauth2/v2.0/token>
+<https://login.microsoftonline.com/&lt;Your Tenant ID Here&gt;/oauth2/v2.0/token>
 
 ![](media/692a2774bd05414a9cf518ec408f3bd4.png)
 
@@ -52,7 +52,7 @@ Callback URL needs to be added to the Authentication tab as a Web Redirect URI
 ![](media/443d34af68fbefb99fe4cd332ed9b3e4.png)
 
 **search_api_url
-https://YourOSDUHost/api/search/v2/query**
+https://&lt;YourOSDUHost&gt;/api/search/v2/query**
 
 **data-partition-id opendes**
 
