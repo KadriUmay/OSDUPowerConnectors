@@ -4,7 +4,7 @@ Demo environment parameters will be provided by Microsoft. Current parameters as
 of 6/22/2020 for R2 QA environment is provided below. For customer tenant custom
 deployments the location to get the parameter is also provided.
 
-**client_id &lt;Your Client ID Here&gt;**
+**client_id \<Your Client ID Here\>**
 
 ![](media/a326745be1ced2e16f0191ff077197c2.png)
 
@@ -18,7 +18,7 @@ value. Copy this for Client_Id parameter.
 
 ![](media/692a2774bd05414a9cf518ec408f3bd4.png)
 
-**client_secret &lt;Your client secret here&gt;**
+**client_secret \<Your Client Secret Here\>**
 
 Select Certificates and secrets tab, hit New client secret and copy the Value
 for client_secret. Note that once you create and save the client secret, you
@@ -27,7 +27,7 @@ create before navigating to a new tab.
 
 ![](media/08bb4a32da19c52014e592a314591c12.png)
 
-**scopes openid profile offline_access &lt;Your Client ID Here&gt;/.default**
+**scopes openid profile offline_access \<Your Client ID Here\>/.default**
 
 The last parameter of the scopes parameter contains a GUID, replace it with the
 client_id parameter above if you’re accessing a custom application
@@ -35,13 +35,13 @@ client_id parameter above if you’re accessing a custom application
 In the following parameters, you will need the replace the GUID with the tenant
 ID for custom deployments.
 
-**tenant_id &lt;Your Tenant ID Here&gt;**
+**tenant_id \<Your Tenan ID Here\>**
 
-**auth_authorize_url**
-https://login.microsoftonline.com/ &lt;Your Tenant ID Here&gt; /oauth2/v2.0/authorize
+**auth_authorize_url** [https://login.microsoftonline.com/\<Your Tenan ID
+Here\>/oauth2/v2.0/authorize](https://login.microsoftonline.com/%3cYour%20Tenan%20ID%20Here%3e/oauth2/v2.0/authorize)
 
-**auth_token_url**
-https://login.microsoftonline.com/ &lt;Your Tenant ID Here&gt; /oauth2/v2.0/token
+**auth_token_url** [https://login.microsoftonline.com/\<Your Tenan ID
+Here\>/oauth2/v2.0/token](https://login.microsoftonline.com/%3cYour%20Tenan%20ID%20Here%3e/oauth2/v2.0/token)
 
 ![](media/692a2774bd05414a9cf518ec408f3bd4.png)
 
@@ -51,8 +51,7 @@ Callback URL needs to be added to the Authentication tab as a Web Redirect URI
 
 ![](media/443d34af68fbefb99fe4cd332ed9b3e4.png)
 
-**search_api_url
-https://&lt;YourOSDUHost&gt;/api/search/v2/query**
+**search_api_url OSDU Host Here\>/api/search/v2/query**
 
 **data-partition-id opendes**
 
@@ -76,7 +75,7 @@ Extensions and install Power Query SDK as shown below.
 
 ![](media/10465c4cc2c5291d391f20f7c2dfcc6f.png)
 
-Once installed open the M Language Project under Power BI Connector.
+Once installed open the M Language Project here.
 
 Solution has 3 main files and set of resources. Config.json stores the
 connection parameters, it has been pre-populated with the demo environment
@@ -171,7 +170,7 @@ in your own tenant if you’re using a custom deployment. Hit Sign, fill in
 account details and hit connect.
 
 You will get a query results window where the data from OSDU R2 is pulled as a
-hierarchical json file. For a sample file see the PBIX file under Power BI Sample Dashboard.
+hierarchical json file. For a sample file see the PBIX file here.
 
 ![](media/a1f98588255d99df3982e1768a64396b.png)
 
@@ -201,7 +200,7 @@ simple Postman Collection with a single query to search for wells in OSDU R2.
 
 ![](media/f844c77bc02830464f6e52020c74c4ab.png)
 
-The Power Automate Connector Postman collection could be downloaded from Power Automate Connector Postman Collection.
+The Power Automate Connector Postman collection could be downloaded from here.
 Note that the query doesn’t run as you need to provide a bearer token.
 
 ![](media/6c4acf1043e880dafcb19b083959a83e.png)
@@ -268,7 +267,7 @@ You will see the successful response on the bottom of the page
 
 Now that you have created a custom connector, you can create a Power Automate
 flow using the designer. Navigate to <https://make.preview.powerapps.com/> ,
-select Apps -\> Import Canvas App, it upload and select zip file located at Power Automate Package.
+select Apps -\> Import Canvas App, it upload and select zip file located here.
 
 ![](media/9023e3f8cf3a480254ef3ee695202b4a.png)
 
@@ -416,3 +415,126 @@ Select the Application and test from your phone.
 ![](media/99f50412ea3b13fcd08c7b08315bc49b.png)
 
 Congratulations, you’ve built your first OSDU R2 mobile application.
+
+# Creating the Power Apps Flow – Step by Step
+
+In the previous section we’ve imported the solution for the Power Apps Flow, in
+this section we’ll show the step by instruction to build it from scratch
+
+Open the newly created application and select edit
+
+![](media/34b106b56c1bb9f3f43606e1760bb158.png)
+
+Select the Button and select the Action ribbon item and Select Power Automate
+
+![](media/1132fc4ee5aaf5abe920f4bd855b93ec.png)
+
+Select Create a new flow
+
+![](media/efa85172e8c1368637c131d771567d2c.png)
+
+Select the first template called PowerApps button
+
+![](media/2edd2f6d7cca2d4f6f4816f24436d6f9.png)
+
+Add a New Step
+
+![](media/bd56631f22d3f945682370662844c655.png)
+
+Search for Initialize variable and add to the Canvas, repeat this step to add a
+second Initialize variable.
+
+![](media/61e493e68e319014ac8d48c590559d2e.png)
+
+Add the following to the two initialize variable boxes:
+
+-   Name: query
+
+-   Type: String
+
+-   Value: data.UWI:
+
+-   Name: kind
+
+-   Type: String
+
+-   Value: opendes:osdu:well-master:0.2.1
+
+For the “query” box, put the cursor after the data:UWI: and select the Ask in
+PowerApps from the Dynamic content
+
+![](media/e42100a0398b29e2fbeb60aaa65f2947.png)
+
+It will create a variable to read the UWI value put in the TextBox in the Power
+App. Your flow should like this
+
+![](media/c24e90d0a57b0dc2423b42137acfdf8f.png)
+
+Add a new step, Select Custom and add the custom connector you’ve created
+previously as mentioned in this document
+
+![](media/78f2c1431bc1292dbfade2043e56256b.png)
+
+Drag – Drop the kind and query fields from Dynamic content. Note: When you
+select the kind or query field the Dynamic content tab pops out.
+
+![](media/2717923aee43e4ce9dee256eeafb716e.png)
+
+Add a new Parse JSON step
+
+![](media/c2bf86c3ed8675c2f79913126b26864e.png)
+
+For the content, select Dynamic content and pick the Body from the customer
+connector
+
+![](media/9008ff707497c271307214807f7b7e32.png)
+
+Schema could be generated from sample, you can find a sample file from the OSDU
+search query under Power Automate Connector Postman
+Collection/Sampleresponse.json. Copy the contents of this file, click Generate
+from sample, and paste and click done, the schema for parser is generated
+automatically.
+
+![](media/eefee4d11bd562375e11aca9ca9a4471.png)
+
+Create new Select step
+
+![](media/74d5cb3918a92c647b7b199b9c0c8d87.png)
+
+Select the From field, and select results from Parse JSON step from the Dynamic
+content selector
+
+![](media/75be3e7023581d7578a87a72c8457e01.png)
+
+Add the following to Map variables
+
+![](media/8694d3dba62c631d034e337b44dcbbe8.png)
+
+Add a new Http Response step by clicking the Add an action within the Apply to
+each block.
+
+![](media/b9568b81d4242a114dc9f8b94dcc7431.png)
+
+Add the following parameter as output.
+
+![](media/6a4c7398d19d1091234ef10ab1d97b1a.png)
+
+Click Show advanced options. Schema could be generated from sample, you can find
+a sample file from the OSDU search query under Power Automate Connector Postman
+Collection/ SampleoutputtoPowerApps.json. Copy the contents of this file, click
+Generate from sample, and paste and click done, the schema for parser is
+generated automatically.
+
+![](media/669610df763e0e51a7fdf4d74b80b2e8.png)
+
+Save the Power Automate Flow and go back to the Power App and select the newly
+created Power Automate Flow (PowerApps button in this case)
+
+![](media/ef9efcc3d43390086f547ce51c45cd16.png)
+
+Add the following code to the Button OnSelect, this will call the new Power
+Automate Flow and search for the specific well with the UWI.
+
+*ClearCollect(response, PowerAppsbutton.Run(TextInput1.Text))*
+
+Hit Run and you should see below screen for a sample search
