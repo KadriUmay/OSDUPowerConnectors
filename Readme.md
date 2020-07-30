@@ -135,6 +135,11 @@ Desktop is open, close and reopen.
 
 C:\\Users\\\<username\>\\Documents\\Power BI Desktop\\Custom Connectors
 
+NOTE: If you don't see the connector in PowerBI, you might have a redirected Documents folder.
+Directory above might not work if your organization has implemented a home folder redirection. 
+Check the location of your Documents folder and create director under that.
+For example : C:\\Users\\<username>\\OneDrive\\Documents\\Power BI Desktop\\Custom Connectors
+
 ![](media/4193c87a024cbfd6497abe51001e2601.png)
 
 Open Power BI Desktop (not the PowerBI Windows Application). You can download
