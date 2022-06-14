@@ -86,7 +86,7 @@ OSDUWellsConnector.pg is the main code with the connector logic.
 OSDUWellsConnector.query.pg has the test code which enabled the connector to be
 run and tested within Visual Studio, Double click the .sin file to enter the project.Next hit F5 or the green run button, first you
 will prompted to authenticate and get token, once the token is acquired hit the
-Store Credentials, close the window and re-rerun the query. If this step fails, please check if you have the required entitlements to the app/instance you are working with. To get the required entitlemets follow the steps from [here](https://github.com/MicrosoftDocs/Project-Oak-Forest/blob/main/how-to/how-to-manage-users.md)
+Store Credentials, close the window and re-rerun the query. If this step fails, please check if you have the required entitlements to the app/instance you are working with. To get the required entitlemets follow the steps from [here](https://osdu.projects.opengroup.org/subcommittees/business-model-outreach/projects/app-dev-training/work-products/supporting-docs/)
 
 ![](media/2568a89548d876e89400f762e18d5555.png)
 
