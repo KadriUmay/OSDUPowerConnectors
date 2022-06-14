@@ -84,9 +84,9 @@ explained in the first section of this document.
 
 OSDUWellsConnector.pg is the main code with the connector logic.
 OSDUWellsConnector.query.pg has the test code which enabled the connector to be
-run and tested within Visual Studio, hit F5 or the green run button, first you
+run and tested within Visual Studio, Double click the .sin file to enter the project.Next hit F5 or the green run button, first you
 will prompted to authenticate and get token, once the token is acquired hit the
-Store Credentials, close the window and re-rerun the query.
+Store Credentials, close the window and re-rerun the query. If this step fails, please check if you have the required entitlements to the app/instance you are working with. To get the required entitlemets follow the steps from [here](https://osdu.projects.opengroup.org/subcommittees/business-model-outreach/projects/app-dev-training/work-products/supporting-docs/)
 
 ![](media/2568a89548d876e89400f762e18d5555.png)
 
@@ -178,6 +178,8 @@ You will get a query results window where the data from OSDU R2 is pulled as a
 hierarchical json file. For a sample file see the PBIX file here.
 
 ![](media/a1f98588255d99df3982e1768a64396b.png)
+  
+After you get the records, from the transform tab convert data into a table. You can further expand columns and apply filters by right clicking on a column. After this apply this data from the button at the top left and proceed to the visualisations window. Add any visual you want and select the data fileds you want as part of it.
 
 ![](media/c809cf612f6589f202610125cb4d9fa9.png)
 
