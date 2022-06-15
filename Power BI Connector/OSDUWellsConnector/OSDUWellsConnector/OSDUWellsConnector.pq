@@ -32,7 +32,7 @@ shared OSDUWellsConnector.Contents = (kind as text, query as text, optional limi
              ]  
            ))
     in
-        Source[results];
+        Source;
  
 // Data Source Kind description
 OSDUWellsConnector = [
