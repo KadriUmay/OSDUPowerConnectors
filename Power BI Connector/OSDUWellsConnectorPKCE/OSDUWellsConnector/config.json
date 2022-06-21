@@ -1,0 +1,10 @@
+{
+  "client_id": "Your Client ID",
+  "client_secret": "Your Client Secret",
+  "osduindexsearchendpoint": "https://YourOSDUHost/api/search/v2/query",
+  "auth_callback_url": "http://localhost:8080/auth/callback",
+  "auth_token_url": "https://login.microsoftonline.com/Your Tenant ID/oauth2/v2.0/token",
+  "auth_authorize_url": "https://login.microsoftonline.com/Your Tenant ID/oauth2/v2.0/authorize",
+  "scopes": "openid profile offline_access YourClientID/.default",
+  "data_partition_id": "opendes"
+}
