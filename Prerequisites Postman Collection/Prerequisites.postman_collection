@@ -1,0 +1,304 @@
+{
+	"info": {
+		"_postman_id": "46317c2c-ed8a-44a9-815c-f3c9faa4313f",
+		"name": "Prerequisites Copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21010358"
+	},
+	"item": [
+		{
+			"name": "Refresh Token Setup",
+			"item": [
+				{
+					"name": "Fetch refresh token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"refresh-token\", data.refresh_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:8080",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client-id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client-secret}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{client-id}}/.default offline_access",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "{{auth-code}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{tenant-id}}/oauth2/v2.0/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{tenant-id}}",
+								"oauth2",
+								"v2.0",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login with refresh token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"refresh-token\", data.refresh_token);\r",
+									"pm.environment.set(\"access-token\", data.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client-id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client-secret}}",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{refresh-token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{tenant-id}}/oauth2/v2.0/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{tenant-id}}",
+								"oauth2",
+								"v2.0",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Entitlements APIs",
+			"item": [
+				{
+					"name": "Create and Add user to groups",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "data-partition-id",
+								"type": "text",
+								"value": "{{partition-id}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{user-oid}}\",\r\n  \"role\": \"MEMBER\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{uri}}/api/entitlements/v2/groups/users@{{partition-id}}.contoso.com/members",
+							"protocol": "https",
+							"host": [
+								"{{uri}}"
+							],
+							"path": [
+								"api",
+								"entitlements",
+								"v2",
+								"groups",
+								"users@{{partition-id}}.contoso.com",
+								"members"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Entitlements Groups for a Member",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "data-partition-id",
+								"value": "{{partition-id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{uri}}/api/entitlements/v2/members/{{user-oid}}/groups?type=none",
+							"protocol": "https",
+							"host": [
+								"{{uri}}"
+							],
+							"path": [
+								"api",
+								"entitlements",
+								"v2",
+								"members",
+								"{{user-oid}}",
+								"groups"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "none"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add user to Entitlements Editors Group",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "data-partition-id",
+								"value": "{{partition-id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{user-oid}}\",\r\n  \"role\": \"MEMBER\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{uri}}/api/entitlements/v2/groups/users.datalake.editors@{{partition-id}}.contoso.com/members",
+							"protocol": "https",
+							"host": [
+								"{{uri}}"
+							],
+							"path": [
+								"api",
+								"entitlements",
+								"v2",
+								"groups",
+								"users.datalake.editors@{{partition-id}}.contoso.com",
+								"members"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
