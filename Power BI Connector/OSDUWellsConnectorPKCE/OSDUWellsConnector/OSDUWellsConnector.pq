@@ -1,24 +1,25 @@
-﻿// This file contains your Data Connector logic
-
-section OSDUWellsConnector;
+﻿section OSDUWellsConnector;
 
 config = Json.Document(Text.FromBinary(Extension.Contents("config.json")));
-client_id = "<Client ID here>";
-redirect_uri = "<Redirect URL here>"; // Must be a SPA Application Redirect URI
-origin_uri = "http://localhost";
-logout_uri = "https://login.microsoftonline.com/logout.srf";
-scopes = "openid profile offline_access <Client ID here>/.default";
-OAuthBaseUrl = "https://login.microsoftonline.com/<Tenant Here>/oauth2/v2.0";
+clientId = config[client_id];
+redirectUri = config[redirect_uri]; // Must be a platform that supports PKCE
+oAuthBaseUrl = config[oauth_base_url];
+osduSearchEndpointUrl = config[osduindexsearchendpoint];
+dataParitionId = config[data_partition_id];
 
-windowWidth = 720;
-windowHeight = 1024;
+logoutUri = "https://login.microsoftonline.com/logout.srf";
 
 [DataSource.Kind="OSDUWellsConnector", Publish="OSDUWellsConnector.Publish"]
 shared OSDUWellsConnector.Contents = (kind as text, query as text, optional limit as number, optional offset as number, optional returnedFields as text) =>
     let
-        kind = "Hello world"
+            body = GetQueryString(kind, query, limit, offset, returnedFields),
+            Source = Json.Document(Web.Contents(osduSearchEndpointUrl,[
+                Headers = [#"Content-Type"="application/json", #"data-partition-id"=dataParitionId],
+                Content = Text.ToBinary(body)
+             ]  
+           ))
     in
-        kind;
+        Source;
  
 // Data Source Kind description
 OSDUWellsConnector = [
@@ -43,25 +44,43 @@ OSDUWellsConnector.Publish = [
     SourceImage = OSDUWellsConnector.Icons,
     SourceTypeImage = OSDUWellsConnector.Icons
 ];
- 
+
+ Base64UrlEncode = (toConvert as binary) =>
+	let
+		encodedText = Binary.ToText(toConvert, BinaryEncoding.Base64)
+	in
+		Text.Remove(Text.Replace(Text.Replace(encodedText, "+", "-"), "/", "_"), "=");
+
+CreateCodeChallenge = (codeVerifier as text) => 
+    let 
+        encodedText = Text.ToBinary(codeVerifier, TextEncoding.Ascii),
+        challenge = Base64UrlEncode(Crypto.CreateHash(CryptoAlgorithm.SHA256, encodedText))
+    in
+        challenge;
+
+GetScopes = () =>
+    let
+        scopes = "openid profile offline_access " & clientId & "/.default"
+    in 
+        scopes;
+
 StartLogin = (resourceUrl, state, display) =>
     let
-        // We'll generate our code verifier using Guids
         codeVerifier = Text.NewGuid() & Text.NewGuid(),
-        AuthorizeUrl = OAuthBaseUrl & "/authorize?" & Uri.BuildQueryString([
-            client_id = client_id,
+        AuthorizeUrl = oAuthBaseUrl & "/authorize?" & Uri.BuildQueryString([
+            client_id = clientId,
             response_type = "code",
-            code_challenge_method = "plain",
-            code_challenge = codeVerifier,
+            code_challenge_method = "S256",
+            code_challenge = CreateCodeChallenge(codeVerifier),
             state = state,
-            scope = scopes,
-            redirect_uri = redirect_uri])
+            scope = GetScopes(),
+            redirect_uri = redirectUri])
     in
         [
             LoginUri = AuthorizeUrl,
-            CallbackUri = redirect_uri,
-            WindowHeight = windowHeight,
-            WindowWidth = windowWidth,
+            CallbackUri = redirectUri,
+            WindowHeight = 720,
+            WindowWidth = 1024,
             Context = codeVerifier
         ];
 
@@ -73,7 +92,7 @@ FinishLogin = (context, callbackUri, state) =>
  
 Refresh = (resourceUrl, refresh_token) => TokenMethod(refresh_token, "refresh_token");
 
-Logout = (token) => logout_uri;
+Logout = (token) => logoutUri;
  
 // Verifier is optional to support both the original FinishLogin call
 // (which has a verifier) and the Refresh call (which does not).
@@ -82,21 +101,21 @@ TokenMethod = (code, grant_type, optional verifier) =>
         codeVerifier = if (verifier <> null) then [code_verifier = verifier] else [],
         codeParameter = if (grant_type = "authorization_code") then [ code = code ] else [ refresh_token = code ],
         query = codeVerifier & codeParameter & [
-            client_id = client_id,
+            client_id = clientId,
             grant_type = grant_type,
-            redirect_uri = redirect_uri
+            redirect_uri = redirectUri
         ],
  
         // Set this if your API returns a non-2xx status for login failures
         // ManualHandlingStatusCodes = {400, 403}
-        ManualHandlingStatusCodes= {},
+        ManualHandlingStatusCodes= {400},
         
-        Response = Web.Contents(OAuthBaseUrl & "/token", [
+        Response = Web.Contents(oAuthBaseUrl & "/token", [
             Content = Text.ToBinary(Uri.BuildQueryString(query)),
             Headers = [
                 #"Content-type" = "application/x-www-form-urlencoded",
                 #"Accept" = "application/json",
-                #"Origin" = origin_uri
+                #"Origin" = ""
             ],
             ManualStatusHandling = ManualHandlingStatusCodes
         ]),
