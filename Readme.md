@@ -18,40 +18,21 @@ value. Copy this for Client_Id parameter.
 
 ![](media/692a2774bd05414a9cf518ec408f3bd4.png)
 
-**client_secret \<Your Client Secret Here\>**
-
-Select Certificates and secrets tab, hit New client secret and copy the Value
-for client_secret. Note that once you create and save the client secret, you
-will not have access to the secret value. Be sure to copy it as soon as you
-create before navigating to a new tab.
-
-![](media/08bb4a32da19c52014e592a314591c12.png)
-
-**scopes openid profile offline_access \<Your Client ID Here\>/.default**
-
-The last parameter of the scopes parameter contains a GUID, replace it with the
-client_id parameter above if you’re accessing a custom application
-
 In the following parameters, you will need the replace the GUID with the tenant
 ID for custom deployments.
 
-**tenant_id \<Your Tenan ID Here\>**
+**tenant_id \<Your Tenant ID Here\>**
 
-**auth_authorize_url** [https://login.microsoftonline.com/\<Your Tenan ID
-Here\>/oauth2/v2.0/authorize](https://login.microsoftonline.com/%3cYour%20Tenan%20ID%20Here%3e/oauth2/v2.0/authorize)
+**oauth_base_url** [https://login.microsoftonline.com/\<Your Tenan ID
+Here\>/oauth2/v2.0](https://login.microsoftonline.com/%3cYour%20Tenan%20ID%20Here%3e/oauth2/v2.0)
 
-**auth_token_url** [https://login.microsoftonline.com/\<Your Tenan ID
-Here\>/oauth2/v2.0/token](https://login.microsoftonline.com/%3cYour%20Tenan%20ID%20Here%3e/oauth2/v2.0/token)
+**redirect_uri** <http://localhost:8080/auth/callback>
 
-![](media/692a2774bd05414a9cf518ec408f3bd4.png)
+Callback URL needs to be added to the Authentication tab as a ingle-page application (SPA) Redirect URI. Note: The platform (SPA in this case) must be able to support PKCE authentication. If you are using Azure, then SPA will work fine.
 
-**auth_callback_url** <http://localhost:8080/auth/callback>
+![](media/redirecturi.png)
 
-Callback URL needs to be added to the Authentication tab as a Web Redirect URI
-
-![](media/443d34af68fbefb99fe4cd332ed9b3e4.png)
-
-**search_api_url \<OSDU Host Here\>/api/search/v2/query**
+**osduindexsearchendpoint \<OSDU Host Here\>/api/search/v2/query**
 
 **data-partition-id opendes**
 
