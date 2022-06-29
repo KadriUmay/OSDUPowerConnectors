@@ -1,38 +1,27 @@
-﻿// This file contains your Data Connector logic
-
+﻿// V2 - Now using PKCE authentication. Client secrets are no longer needed.
+[Version="2.0.0"]
 section OSDUWellsConnector;
 
 config = Json.Document(Text.FromBinary(Extension.Contents("config.json")));
-client_id = config[client_id];
-client_secret = config[client_secret];
-tenant_id = config[tenant_id];
-osduindexsearchendpoint = config[osduindexsearchendpoint];
-redirect_uri = config[auth_callback_url];
-authorize_uri = config[auth_authorize_url];
-token_uri = config[auth_token_url];
-logout_uri = "https://login.microsoftonline.com/logout.srf";
-data_partition_id = config[data_partition_id];
+clientId = config[client_id];
+redirectUri = config[redirect_uri]; // Must be a platform that supports PKCE
+oAuthBaseUrl = config[oauth_base_url];
+osduSearchEndpointUrl = config[osduindexsearchendpoint];
+dataParitionId = config[data_partition_id];
 
- 
-
-windowWidth = 720;
-windowHeight = 1024;
-scope_prefix = "";
-scopes = config[scopes];
-
- 
+logoutUri = "https://login.microsoftonline.com/logout.srf";
 
 [DataSource.Kind="OSDUWellsConnector", Publish="OSDUWellsConnector.Publish"]
 shared OSDUWellsConnector.Contents = (kind as text, query as text, optional limit as number, optional offset as number, optional returnedFields as text) =>
     let
             body = GetQueryString(kind, query, limit, offset, returnedFields),
-            Source = Json.Document(Web.Contents(osduindexsearchendpoint,[
-                Headers = [#"Content-Type"="application/json", #"data-partition-id"=data_partition_id],
+            Source = Json.Document(Web.Contents(osduSearchEndpointUrl,[
+                Headers = [#"Content-Type"="application/json", #"data-partition-id"=dataParitionId],
                 Content = Text.ToBinary(body)
              ]  
            ))
     in
-        Source[results];
+        Source;
  
 // Data Source Kind description
 OSDUWellsConnector = [
@@ -57,70 +46,88 @@ OSDUWellsConnector.Publish = [
     SourceImage = OSDUWellsConnector.Icons,
     SourceTypeImage = OSDUWellsConnector.Icons
 ];
- 
- 
-// Helper functions for OAuth2: StartLogin, FinishLogin, Refresh, Logout
+
+ Base64UrlEncode = (toConvert as binary) =>
+	let
+		encodedText = Binary.ToText(toConvert, BinaryEncoding.Base64)
+	in
+		Text.Remove(Text.Replace(Text.Replace(encodedText, "+", "-"), "/", "_"), "=");
+
+CreateCodeChallenge = (codeVerifier as text) => 
+    let 
+        encodedText = Text.ToBinary(codeVerifier, TextEncoding.Ascii),
+        challenge = Base64UrlEncode(Crypto.CreateHash(CryptoAlgorithm.SHA256, encodedText))
+    in
+        challenge;
+
+GetScopes = () =>
+    let
+        scopes = "openid profile offline_access " & clientId & "/.default"
+    in 
+        scopes;
+
 StartLogin = (resourceUrl, state, display) =>
     let
-        authorizeUrl = authorize_uri & "?" & Uri.BuildQueryString([
+        codeVerifier = Text.NewGuid() & Text.NewGuid(),
+        AuthorizeUrl = oAuthBaseUrl & "/authorize?" & Uri.BuildQueryString([
+            client_id = clientId,
             response_type = "code",
-            client_id = client_id, 
-            redirect_uri = redirect_uri,
+            code_challenge_method = "S256",
+            code_challenge = CreateCodeChallenge(codeVerifier),
             state = state,
-            scope = scopes
-        ])
+            scope = GetScopes(),
+            redirect_uri = redirectUri])
     in
         [
-            LoginUri = authorizeUrl,
-            CallbackUri = redirect_uri,
+            LoginUri = AuthorizeUrl,
+            CallbackUri = redirectUri,
             WindowHeight = 720,
             WindowWidth = 1024,
-            Context = null
+            Context = codeVerifier
         ];
- 
+
 FinishLogin = (context, callbackUri, state) =>
     let
-        // parse the full callbackUri, and extract the Query string
-        parts = Uri.Parts(callbackUri)[Query],
-        // if the query string contains an "error" field, raise an error
-        // otherwise call TokenMethod to exchange our code for an access_token
-        result = if (Record.HasFields(parts, {"error", "error_description"})) then
-                    error Error.Record(parts[error], parts[error_description], parts)
-                 else
-                    TokenMethod("authorization_code", "code", parts[code])
+        Parts = Uri.Parts(callbackUri)[Query]
     in
-        result;
+        TokenMethod(Parts[code], "authorization_code", context);
  
-Refresh = (resourceUrl, refresh_token) => TokenMethod("refresh_token", "refresh_token", refresh_token);
+Refresh = (resourceUrl, refresh_token) => TokenMethod(refresh_token, "refresh_token");
+
+Logout = (token) => logoutUri;
  
-Logout = (token) => logout_uri;
- 
-// see "Exchange code for access token: POST /oauth/token" at https://cloud.ouraring.com/docs/authentication for details
-TokenMethod = (grantType, tokenField, code) =>
+// Verifier is optional to support both the original FinishLogin call
+// (which has a verifier) and the Refresh call (which does not).
+TokenMethod = (code, grant_type, optional verifier) =>
     let
-        queryString = [
-            grant_type = grantType,
-            redirect_uri = redirect_uri,
-            client_id = client_id,
-            client_secret = client_secret
+        codeVerifier = if (verifier <> null) then [code_verifier = verifier] else [],
+        codeParameter = if (grant_type = "authorization_code") then [ code = code ] else [ refresh_token = code ],
+        query = codeVerifier & codeParameter & [
+            client_id = clientId,
+            grant_type = grant_type,
+            redirect_uri = redirectUri
         ],
-        queryWithCode = Record.AddField(queryString, tokenField, code),
  
-        tokenResponse = Web.Contents(token_uri, [
-            Content = Text.ToBinary(Uri.BuildQueryString(queryWithCode)),
+        // Set this if your API returns a non-2xx status for login failures
+        // ManualHandlingStatusCodes = {400, 403}
+        ManualHandlingStatusCodes= {400},
+        
+        Response = Web.Contents(oAuthBaseUrl & "/token", [
+            Content = Text.ToBinary(Uri.BuildQueryString(query)),
             Headers = [
                 #"Content-type" = "application/x-www-form-urlencoded",
-                #"Accept" = "application/json"
+                #"Accept" = "application/json",
+                #"Origin" = ""
             ],
-            ManualStatusHandling = {400}
+            ManualStatusHandling = ManualHandlingStatusCodes
         ]),
-        body = Json.Document(tokenResponse),
-        result = if (Record.HasFields(body, {"error", "error_description"})) then
-                    error Error.Record(body[error], body[error_description], body)
-                 else
-                    body
+        Parts = Json.Document(Response)
     in
-        result;
+        // check for error in response
+        if (Parts[error]? <> null) then 
+            error Error.Record(Parts[error], Parts[message]?)
+        else
+            Parts;
  
 ValueNumber.IfNull = (a, b, fieldname) => if a <> null then ",""" & fieldname & """: " & Number.ToText(a) else b;
 ValueText.IfNullOrEmpty = (a, b, fieldname) => if (a <> null and a <> "") then  ",""" & fieldname & """: [" & a & "]" else b;
