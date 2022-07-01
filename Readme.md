@@ -1,3 +1,18 @@
+# Overview
+This Power BI Data Connector can be used to connect OSDU to Power BI as a data source. There are three ways to use the connector:
+1. Pre-compiled connector
+1. Compile the connector
+1. Power Apps and Power Automate
+
+# Prerequisites
+There are a few pieces necessary to support OAUth authentication from the connector.
+1. Client ID
+    If you are using Azure, you can create an Azure AD Application and copy the client ID from its overview page
+1. PKCE Capable Redirect URI 
+    If you are using Azure, you can create a Single-Page Application (SPA) typed platform and enter a redirect URI (e.g. http://localhost:8080/auth/callback)
+1. Tenant ID
+    If you are using Azure, this can be found on the Azure AD Application overview page
+
 # Connection Parameters
 
 Demo environment parameters will be provided by Microsoft. Current parameters as
