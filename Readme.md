@@ -1,63 +1,32 @@
 # Overview
 This Power BI Data Connector can be used to connect OSDU to Power BI as a data source. There are three ways to use the connector:
-1. Pre-compiled connector
-1. Compile the connector
-1. Power Apps and Power Automate
+1. [Pre-compiled connector]()
+1. [Compile the connector](#compiling-the-connector)
+1. [Power Apps and Power Automate](#connecting-power-apps-and-power-automate-to-osdu-r2)
 
 # Prerequisites
-There are a few pieces necessary to support OAUth authentication from the connector.
-1. Client ID
-    If you are using Azure, you can create an Azure AD Application and copy the client ID from its overview page
-1. PKCE Capable Redirect URI 
-    If you are using Azure, you can create a Single-Page Application (SPA) typed platform and enter a redirect URI (e.g. http://localhost:8080/auth/callback)
+There are a few pieces necessary to support OAUth authentication from the connector. These will be used in the config file of the pre-compiled and self-compiled connector.
+
+1. App Registration and Client ID
+1. PKCE Capable Redirect URI
 1. Tenant ID
-    If you are using Azure, this can be found on the Azure AD Application overview page
 
-# Connection Parameters
+## Azure
+These steps will walk you through creating an Azure AD Application and configuring it for the Connector.
+1. Navigate to the Azure Active Directory page in your Azure Portal
+1. Click "+ Add" and select "App Registration"
+1. Enter a name
+1. Select "Single-page application (SPA)" under "Redirect URI", and enter a redirect URI  (e.g. http://localhost:8080/auth/callback)
+1. Click "Register"
+1. Note the "Application (client) ID" and "Directory (tenant) ID" from the overview page. You will need these for the configuration file.
 
-Demo environment parameters will be provided by Microsoft. Current parameters as
-of 6/22/2020 for R2 QA environment is provided below. For customer tenant custom
-deployments the location to get the parameter is also provided.
+# Pre-compiled Connector
 
-**client_id \<Your Client ID Here\>**
-
-![](media/a326745be1ced2e16f0191ff077197c2.png)
-
-Select App Registrations if you have an existing application then select it
-otherwise select New Registration.
-
-![](media/89a8d6ce2e25d639571a2df998160fb2.png)
-
-Client ID can be obtained from the Overview tab under Application (client) ID
-value. Copy this for Client_Id parameter.
-
-![](media/692a2774bd05414a9cf518ec408f3bd4.png)
-
-In the following parameters, you will need the replace the GUID with the tenant
-ID for custom deployments.
-
-**tenant_id \<Your Tenant ID Here\>**
-
-**oauth_base_url** [https://login.microsoftonline.com/\<Your Tenan ID
-Here\>/oauth2/v2.0](https://login.microsoftonline.com/%3cYour%20Tenan%20ID%20Here%3e/oauth2/v2.0)
-
-**redirect_uri** <http://localhost:8080/auth/callback>
-
-Callback URL needs to be added to the Authentication tab as a ingle-page application (SPA) Redirect URI. Note: The platform (SPA in this case) must be able to support PKCE authentication. If you are using Azure, then SPA will work fine.
-
-![](media/redirecturi.png)
-
-**osduindexsearchendpoint \<OSDU Host Here\>/api/search/v2/query**
-
-**data-partition-id opendes**
-
-These parameters need to be provided by the deployment team for deployments in
-customer tenants
-
-# PowerBI Connectivity
+# Compiling the Connector
 
 ## Building a Connector to OSDU R2 supporting OAuth2 and OpenID
 
+### Overview
 To be able to connect to OSDU R2 we need to support OAuth2 and OpenID protocol
 with Code Grant Workflow. This needs development of a very simple Power BI
 connector in M Language. Most of the code is boilerplate and the core part of
@@ -66,13 +35,6 @@ the results. For illustrative purposes we will provide a very simple connector
 which could be used to send a full text query and get the returned results as a
 hierarchical JSON object which is re-shaped in Power BI Desktop.
 
-First we’ll need to open Visual Studio and load M-Language extensions. Select
-Extensions and install Power Query SDK as shown below.
-
-![](media/10465c4cc2c5291d391f20f7c2dfcc6f.png)
-
-Once installed open the M Language Project here.
-
 Solution has 3 main files and set of resources. Config.json stores the
 connection parameters, it has been pre-populated with the demo environment
 values. For custom tenants, replace the parameters with the customer values as
@@ -80,9 +42,8 @@ explained in the first section of this document.
 
 OSDUWellsConnector.pg is the main code with the connector logic.
 OSDUWellsConnector.query.pg has the test code which enabled the connector to be
-run and tested within Visual Studio, Double click the .sin file to enter the project.Next hit F5 or the green run button, first you
-will prompted to authenticate and get token, once the token is acquired hit the
-Store Credentials, close the window and re-rerun the query. If this step fails, please check if you have the required entitlements to the app/instance you are working with. To get the required entitlemets follow the steps from [here](https://osdu.projects.opengroup.org/subcommittees/business-model-outreach/projects/app-dev-training/work-products/supporting-docs/)
+run and tested within Visual Studio.
+
 
 ![](media/2568a89548d876e89400f762e18d5555.png)
 
@@ -95,37 +56,46 @@ also put the keyword optional in front of the variables you define. For the
 purposes of the demo we are defining a kind attribute and query which form the
 body of the search query in Lucene syntax sent to the OSDU R2 search engine.
 
+```
 [DataSource.Kind="OSDUWellsConnector", Publish="OSDUWellsConnector.Publish"]
-
-shared OSDUWellsConnector.Contents = (kind as text, query as text) =\>
-
-let
-
-body = GetQueryString(kind as text, query as text),
-
-Source = **Json.Document**(**Web.Contents**(osduindexsearchendpoint,[
-
-Headers = [\#"Content-Type"="application/json",
-\#"data-partition-id"=data_partition_id],
-
-Content = **Text.ToBinary**(body)
-
-]
-
-))
-
-in
-
-Source;
+shared OSDUWellsConnector.Contents = (kind as text, query as text, optional limit as number, optional offset as number, optional returnedFields as text) =>
+    let
+            body = GetQueryString(kind, query, limit, offset, returnedFields),
+            Source = Json.Document(Web.Contents(osduSearchEndpointUrl,[
+                Headers = [#"Content-Type"="application/json", #"data-partition-id"=dataParitionId],
+                Content = Text.ToBinary(body)
+             ]  
+           ))
+    in
+        Source;
+```
 
 GetQueryString function forms the query from the input parameters. The rest of
 code doesn’t need to be changed, it is boilerplate code to get the id_token and
 authorization tokens.
+### Steps
+1. Open Visual Studio 2019
+1. Install the Power Query SDK extension
+    ![](media/10465c4cc2c5291d391f20f7c2dfcc6f.png)
+1. Open the [OSDUWellsConnector.sln file](./Power%20BI%20Connector/OSDUWellsConnector/OSDUWellsConnector.sln) in Visual Studio 2019
+1. Configure the [config.json](./Power%20BI%20Connector/OSDUWellsConnector/OSDUWellsConnector/config.json) file
+    * Copy the values from [Prerequisites](#prerequisites) into the config file
+    * You'll need the client ID, redirect URI, tenant ID, OSDU host name, and your OSDU data partition ID
+1. Build the solution by hitting F5 or the run button
+    * A connector file (.mez) will be compiled and placed in <Project Directory\>/bin/Debug or Release
 
-Build the application, it generates OSDUWellsConnector.mez located under
-\<Project Directory\>/bin/Debug or Release.
+### Testing from Visual Studio
+There is a [OSDUWellsConnector.query.pq test file](./Power%20BI%20Connector/OSDUWellsConnector/OSDUWellsConnector/OSDUWellsConnector.query.pq) that can be used to test the connector within Visual Studio. You can enter query parameters in this file.
+1. Run the test file by hitting F5 or the green run button,
+1. Authenticate, get a token, and hit Store Credentials
+    > Note: Each time you change the query you'll need to reauthenticate and store the credential
+1. Close the test window and re-run the test file
+    * If successful, you'll see returned data
+    * If it fails, check that you have the required entitlements entitlements to the app/instance you are working with. To get the required entitlements follow the steps from [here](https://osdu.projects.opengroup.org/subcommittees/business-model-outreach/projects/app-dev-training/work-products/supporting-docs/)
 
-Copy the .mez file and the config.json file in the project directory to the
+# Using the Connector with Power BI
+
+Copy the connector (.mez extension) file and the config.json file in the project directory to the
 following directory. Create the directory if it doesn’t exist. If Power BI
 Desktop is open, close and reopen.
 
@@ -192,6 +162,9 @@ section to get parameters for your environment. We will need to add a return url
 parameter to the Application in Azure Active Directory hence you will need
 someone with administrative privileges to make the necessary changes on the
 application definitions.
+
+## Prerequisites
+In addition to [general prerequisites](#prerequisites), you will also need a client secret. If you are using Azure, you can obtain one on the __Certificates & Secrets__ page of your Azure AD application.
 
 ## Creating the Custom Connector for OSDU R2 to support OAuth2/OpenID
 
