@@ -24,6 +24,7 @@ These steps will walk you through creating an Azure AD Application and configuri
 1. Click "+ Add" and select "App Registration"
 1. Enter a name
 1. Select "Single-page application (SPA)" under "Redirect URI", and enter a redirect URI  (e.g. http://localhost:8080/auth/callback)
+    > If you plan to use the connector with an [on-premises data gateway](https://docs.microsoft.com/en-us/data-integration/gateway/service-gateway-onprem) you'll need to use https://oauth.powerbi.com/views/oauthredirect.html for the redirect URI
 1. Click "Register"
 1. Note the "Application (client) ID" and "Directory (tenant) ID" from the overview page. You will need these for the configuration file.
 

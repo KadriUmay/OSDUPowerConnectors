@@ -25,7 +25,13 @@ shared OSDUWellsConnector.Contents = (kind as text, query as text, optional limi
  
 // Data Source Kind description
 OSDUWellsConnector = [
-    TestConnection = (dataSourcePath) => {"OSDUWellsConnector.Contents", dataSourcePath },
+     TestConnection = (dataSourcePath) =>
+        let
+            json = Json.Document(dataSourcePath),
+            kind = json[kind],
+            query = json[query]
+        in
+            { "OSDUWellsConnector.Contents", kind, query },
     Authentication = [
         OAuth = [
             StartLogin=StartLogin,
